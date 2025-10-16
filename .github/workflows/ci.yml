@@ -52,12 +52,18 @@ jobs:
 
       - name: Generate coverage report
         if: matrix.build_type == 'coverage'
-        run: gcovr . --xml-pretty -o "build/coverage.xml" --gcov-executable "llvm-cov gcov" --object-directory "build/.objs"
+        run: >
+          gcovr . --xml-pretty
+          -o "build/coverage.xml"
+          --root "${{ github.workspace }}"
+          --gcov-executable "llvm-cov gcov"
+          --object-directory "build/.objs"
 
       - name: Upload coverage to Codecov
         if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
+          root_dir: ${{ github.workspace }}
           file: build/coverage.xml
           plugins: noop
           disable_search: true
@@ -111,6 +117,7 @@ jobs:
         run: >
           gcovr . --xml-pretty
           -o "build/coverage.xml"
+          --root "${{ github.workspace }}"
           --gcov-executable "llvm-cov gcov"
           --object-directory "build/.objs"
 
@@ -118,6 +125,7 @@ jobs:
         if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
+          root_dir: ${{ github.workspace }}
           file: build/coverage.xml
           plugins: noop
           disable_search: true
