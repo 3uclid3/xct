@@ -58,7 +58,9 @@ jobs:
         if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
-          files: build/coverage.xml
+          file: build/coverage.xml
+          plugins: noop
+          disable_search: true
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -116,6 +118,8 @@ jobs:
         if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
-          files: build/coverage.xml
+          file: build/coverage.xml
+          plugins: noop
+          disable_search: true
           fail_ci_if_error: true
           token: ${{ secrets.CODECOV_TOKEN }}
