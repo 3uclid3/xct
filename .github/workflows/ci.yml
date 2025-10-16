@@ -45,7 +45,7 @@ jobs:
         if: always()
         uses: codecov/test-results-action@v1
         with:
-          files: build/junit/*.junit.xml
+          files: build/*.junit.xml
           flags: unit-tests-${{ matrix.build_type }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
