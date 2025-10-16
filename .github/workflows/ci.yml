@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  linux:
     name: ${{ matrix.build_type }}
     runs-on: ubuntu-24.04
     permissions:
@@ -46,13 +46,71 @@ jobs:
         uses: codecov/test-results-action@v1
         with:
           files: build/*.junit.xml
-          flags: unit-tests-${{ matrix.build_type }}
+          flags: unit-tests-linux-${{ matrix.build_type }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Generate coverage report
         if: ${{ matrix.build_type }} == 'coverage'
         run: gcovr . --xml-pretty -o "build/coverage.xml" --gcov-executable "llvm-cov gcov" --object-directory "build/.objs"
+
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.build_type }} == 'coverage'
+        uses: codecov/codecov-action@v4
+        with:
+          files: build/coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+  windows:
+    name: ${{ matrix.build_type }}
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build_type: [debug, release, coverage]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup xmake
+        uses: xmake-io/github-action-setup-xmake@v1
+
+      - name: Setup Python
+        if: ${{ matrix.build_type }} == 'coverage'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install gcovr
+        if: ${{ matrix.build_type }} == 'coverage'
+        run: python -m pip install --upgrade pip gcovr
+
+      - name: Configure
+        run: xmake f -m ${{ matrix.build_type }} -y
+
+      - name: Build
+        run: xmake build -y
+
+      - name: Run unit tests
+        run: xmake test -g tests.unit */junit
+
+      - name: Upload test results to Codecov
+        if: always()
+        uses: codecov/test-results-action@v1
+        with:
+          files: build/*.junit.xml
+          flags: unit-tests-windows-${{ matrix.build_type }}
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Generate coverage report
+        if: ${{ matrix.build_type }} == 'coverage'
+        run: >
+          gcovr . --xml-pretty
+          -o "build/coverage.xml"
+          --gcov-executable "llvm-cov gcov"
+          --object-directory "build/.objs"
 
       - name: Upload coverage to Codecov
         if: ${{ matrix.build_type }} == 'coverage'
