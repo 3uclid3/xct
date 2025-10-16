@@ -1,3 +1,3 @@
-# template-cpp-base
+# tpl-cpp
 
-Base Template for any C++ project
+Template for C++ project
