@@ -2,7 +2,7 @@ add_requires("doctest")
 
 -- Helper to build JUnit output path for a target
 function junit_out(targetname)
-    return path.join(os.projectdir(), "build", "junit", string.format("%s.junit.xml", targetname))
+    return path.join(os.projectdir(), "build", string.format("%s.junit.xml", targetname))
 end
 
 target("nubwork.doctest")
