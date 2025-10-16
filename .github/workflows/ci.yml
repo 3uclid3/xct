@@ -55,7 +55,6 @@ jobs:
         run: >
           gcovr . --xml-pretty
           -o "build/coverage.xml"
-          --root "${{ github.workspace }}"
           --gcov-executable "llvm-cov gcov"
           --object-directory "build/.objs"
 
@@ -63,7 +62,6 @@ jobs:
         if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
-          root_dir: ${{ github.workspace }}
           file: build/coverage.xml
           plugins: noop
           disable_search: true
@@ -83,7 +81,11 @@ jobs:
 
       - name: Setup xmake
         uses: xmake-io/github-action-setup-xmake@v1
-
+        with:
+          package-cache: true
+          package-cache-key: windows-${{ matrix.build_type }}
+          project-path: ${{ github.workspace }}
+          
       - name: Setup Python (coverage only)
         if: matrix.build_type == 'coverage'
         uses: actions/setup-python@v5
@@ -117,7 +119,6 @@ jobs:
         run: >
           gcovr . --xml-pretty
           -o "build/coverage.xml"
-          --root "${{ github.workspace }}"
           --gcov-executable "llvm-cov gcov"
           --object-directory "build/.objs"
 
