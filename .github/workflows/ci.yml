@@ -51,11 +51,11 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Generate coverage report
-        if: ${{ matrix.build_type }} == 'coverage'
+        if: matrix.build_type == 'coverage'
         run: gcovr . --xml-pretty -o "build/coverage.xml" --gcov-executable "llvm-cov gcov" --object-directory "build/.objs"
 
       - name: Upload coverage to Codecov
-        if: ${{ matrix.build_type }} == 'coverage'
+        if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
           files: build/coverage.xml
@@ -77,7 +77,7 @@ jobs:
         uses: xmake-io/github-action-setup-xmake@v1
 
       - name: Setup Python
-        if: ${{ matrix.build_type }} == 'coverage'
+        if: matrix.build_type == 'coverage'
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -105,7 +105,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Generate coverage report
-        if: ${{ matrix.build_type }} == 'coverage'
+        if: matrix.build_type == 'coverage'
         run: >
           gcovr . --xml-pretty
           -o "build/coverage.xml"
@@ -113,7 +113,7 @@ jobs:
           --object-directory "build/.objs"
 
       - name: Upload coverage to Codecov
-        if: ${{ matrix.build_type }} == 'coverage'
+        if: matrix.build_type == 'coverage'
         uses: codecov/codecov-action@v4
         with:
           files: build/coverage.xml
