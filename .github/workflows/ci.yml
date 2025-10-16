@@ -5,7 +5,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
-      - 'main'
+      - "main"
   push:
 
 concurrency:
@@ -13,8 +13,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build (${{ matrix.build_type }})
+  ci:
+    name: ${{ matrix.build_type }}
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Configure
-        run: xmake f -m ${{ matrix.build_type }} -y 
+        run: xmake f -m ${{ matrix.build_type }} -y
 
       - name: Build
         run: xmake build -y
@@ -45,8 +45,19 @@ jobs:
         if: always()
         uses: codecov/test-results-action@v1
         with:
-          files: build/junit/*.xml
+          files: build/junit/*.junit.xml
           flags: unit-tests-${{ matrix.build_type }}
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
-          
+
+      - name: Generate coverage report
+        if: ${{ matrix.build_type }} == 'coverage'
+        run: gcovr . --xml-pretty -o "build/coverage.xml" --gcov-executable "llvm-cov gcov" --object-directory "build/.objs"
+
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.build_type }} == 'coverage'
+        uses: codecov/codecov-action@v4
+        with:
+          files: build/coverage.xml
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
