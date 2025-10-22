@@ -17,6 +17,7 @@ jobs:
     name: Linux (${{ matrix.build_type }})
     runs-on: ubuntu-24.04
     permissions:
+      actions: write
       contents: read
       packages: read
     container:
@@ -31,6 +32,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: Cache xmake packages (xrepo)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.xmake
+          key: xmake-${{ runner.os }}-${{ hashFiles('**/xmake.lua', '**/xmake-requires.lock') }}
+          restore-keys: |
+            xmake-${{ runner.os }}-
 
       - name: Configure
         run: xmake f -m ${{ matrix.build_type }} -y
@@ -52,11 +62,15 @@ jobs:
 
       - name: Generate coverage report
         if: matrix.build_type == 'coverage'
-        run: >
-          gcovr . --xml-pretty
-          -o "build/coverage.xml"
-          --gcov-executable "llvm-cov gcov"
-          --object-directory "build/.objs"
+        run: |
+          gcovr \
+            --root "$GITHUB_WORKSPACE" \
+            --filter "$GITHUB_WORKSPACE/app" \
+            --filter "$GITHUB_WORKSPACE/lib" \
+            --gcov-executable "llvm-cov gcov" \
+            --object-directory "build/.objs" \
+            --xml --xml-pretty \
+            -o "build/coverage.xml"
 
       - name: Upload coverage to Codecov
         if: matrix.build_type == 'coverage'
@@ -71,6 +85,9 @@ jobs:
   windows:
     name: Windows (${{ matrix.build_type }})
     runs-on: windows-latest
+    permissions:
+      actions: write
+      contents: read
     strategy:
       fail-fast: false
       matrix:
@@ -81,19 +98,15 @@ jobs:
 
       - name: Setup xmake
         uses: xmake-io/github-action-setup-xmake@v1
+        
+      - name: Cache xmake packages (xrepo)
+        uses: actions/cache@v4
         with:
-          package-cache: true
-          
-      - name: Setup Python (coverage only)
-        if: matrix.build_type == 'coverage'
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install gcovr (coverage only)
-        if: matrix.build_type == 'coverage'
-        run: >
-          python -m pip install --upgrade pip gcovr
+          path: |
+            ~/.xmake
+          key: xmake-${{ runner.os }}-${{ hashFiles('**/xmake.lua', '**/xmake-requires.lock') }}
+          restore-keys: |
+            xmake-${{ runner.os }}-
 
       - name: Configure
         run: xmake f -m ${{ matrix.build_type }} -y
@@ -102,31 +115,6 @@ jobs:
         run: xmake build -y
 
       - name: Run unit tests
-        run: xmake test -g tests.unit */junit
+        run: xmake test -g tests.unit */default
 
-      - name: Upload test results to Codecov
-        if: always()
-        uses: codecov/test-results-action@v1
-        with:
-          files: build/*.junit.xml
-          flags: unit-tests-windows-${{ matrix.build_type }}
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Generate coverage report
-        if: matrix.build_type == 'coverage'
-        run: >
-          gcovr . --xml-pretty
-          -o "build/coverage.xml"
-          --gcov-executable "llvm-cov gcov"
-          --object-directory "build/.objs"
-
-      - name: Upload coverage to Codecov
-        if: matrix.build_type == 'coverage'
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: true
-          disable_search: true
-          plugins: noop
-          file: build/coverage.xml
