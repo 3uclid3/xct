@@ -1,13 +1,6 @@
 {
   "name": "tpl-cpp-dev",
-  "build": {
-    "dockerfile": "../Dockerfile",
-    "target": "dev",
-    "args": {
-      "GCC_VERSION": "14",
-      "LLVM_VERSION": "21"
-    }
-  },
+  "image": "ghcr.io/3uclid3/tpl-cpp-ubuntu-dev:latest",
   "customizations": {
     "vscode": {
       "extensions": [
