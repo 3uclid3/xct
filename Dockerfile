@@ -60,6 +60,11 @@ WORKDIR /workspace
 
 # ---------- dev: pick UID 1000 if present; otherwise root ----------
 FROM base AS dev
+
+# pre-commit
+RUN set -eux; \
+    apt install pre-commit
+
 ENV XMAKE_ROOT=
 USER ubuntu
 WORKDIR /workspace
