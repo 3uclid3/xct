@@ -1,0 +1,6 @@
+{
+  "name": "tpl-dev",
+  "build": { "dockerfile": "../ci/Dockerfile", "target": "dev" },
+  "remoteUser": "dev",
+  "workspaceFolder": "/workspaces/project"
+}

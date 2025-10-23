@@ -1,14 +1,13 @@
-name: Image
+name: Build CI Image
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-      - 'feat/**'
     paths:
-      - .github/workflows/image.yml
-      - docker/ubuntu/Dockerfile
+      - .github/workflows/build-ci-image.yml
+      - ci/Dockerfile
   schedule:
     - cron: "0 3 * * 1"
 
@@ -21,9 +20,10 @@ jobs:
       packages: write
 
     env:
-      IMAGE_FILE: docker/ubuntu/Dockerfile
+      IMAGE_FILE: ci/Dockerfile
       IMAGE_NAME: ${{ github.event.repository.name }}-ubuntu
-      IMAGE_TAG: 24.04
+      UBUNTU_VERSION: 24.04
+      LLVM_VERSION: 21
 
     steps:
       - name: Checkout
@@ -31,6 +31,11 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
+      - name: Set created timestamp
+        shell: bash
+        run: |
+          echo "CREATED=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -44,12 +49,20 @@ jobs:
         with:
           context: .
           file: ${{ env.IMAGE_FILE }}
+          target: ci
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.UBUNTU_VERSION }}-${{ env.LLVM_VERSION }}
             ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.version=${{ env.UBUNTU_VERSION }}-${{ env.LLVM_VERSION }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.created=${{ env.CREATED }}
+            org.opencontainers.image.run_id=${{ github.run_id }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           no-cache: ${{ github.event_name == 'schedule' }}
           build-args: |
-            REFRESH_TS=${{ github.run_id }}
+            LLVM_VERSION=${{ env.LLVM_VERSION }}
