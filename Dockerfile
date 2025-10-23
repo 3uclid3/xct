@@ -61,9 +61,13 @@ WORKDIR /workspace
 # ---------- dev: pick UID 1000 if present; otherwise root ----------
 FROM base AS dev
 
-# pre-commit
+# pre-commit + Node.js + Codex CLI (via npm)
 RUN set -eux; \
-    apt install pre-commit
+    apt-get update -y; \
+    apt-get install -y --no-install-recommends pre-commit nodejs npm; \
+    npm i -g @openai/codex; \
+    npm cache clean --force; \
+    rm -rf /var/lib/apt/lists/*
 
 ENV XMAKE_ROOT=
 USER ubuntu
