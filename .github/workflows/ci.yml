@@ -21,7 +21,7 @@ jobs:
       contents: read
       packages: read
     container:
-      image: ghcr.io/${{ github.repository }}-ubuntu:latest
+      image: ghcr.io/${{ github.repository }}-ubuntu-ci:latest
       credentials:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}

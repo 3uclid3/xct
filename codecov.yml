@@ -21,8 +21,8 @@ comment:
   show_critical_paths: true
 
 ignore:
+  - ".devcontainer/**"
   - ".github/**"
   - ".xmake/**"
   - "build/**"
-  - "docker/**"
   - "tests/**"

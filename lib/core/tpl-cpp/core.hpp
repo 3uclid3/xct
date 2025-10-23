@@ -1,7 +1,7 @@
 #pragma once
 
-namespace nubwork {
+namespace tpl_cpp {
 
 auto return_true() noexcept -> bool;
 
-} // namespace nubwork
+} // namespace tpl_cpp

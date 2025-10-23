@@ -1,6 +1,6 @@
 add_requires("benchmark")
 
-target("nubwork.benchmark")
+target("tpl-cpp.benchmark")
     set_kind("phony")
     set_group("tests.utility")
     set_default(false)

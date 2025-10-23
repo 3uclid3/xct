@@ -1,9 +1,9 @@
-target("nubwork")
+target("tpl-cpp")
     set_kind("binary")
     set_group("app")
 
     add_deps(
-        "nubwork.core"
+        "tpl-cpp.core"
     )
 
     add_files("main.cpp")

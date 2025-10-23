@@ -1,4 +1,4 @@
-name: Build CI Image
+name: Build Images
 
 on:
   workflow_dispatch:
@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths:
-      - .github/workflows/build-ci-image.yml
-      - ci/Dockerfile
+      - .github/workflows/build-images.yml
+      - Dockerfile
   schedule:
     - cron: "0 3 * * 1"
 
@@ -20,10 +20,15 @@ jobs:
       packages: write
 
     env:
-      IMAGE_FILE: ci/Dockerfile
-      IMAGE_NAME: ${{ github.event.repository.name }}-ubuntu
-      UBUNTU_VERSION: 24.04
-      LLVM_VERSION: 21
+      IMAGE_FILE: Dockerfile
+      IMAGE_BASE_NAME: ${{ github.event.repository.name }}-ubuntu
+      UBUNTU_VERSION: "24.04"
+      LLVM_VERSION: "21"
+      GCC_VERSION: "14"
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [ci, dev]
 
     steps:
       - name: Checkout
@@ -49,14 +54,17 @@ jobs:
         with:
           context: .
           file: ${{ env.IMAGE_FILE }}
-          target: ci
+          target: ${{ matrix.target }}
           push: true
+          build-args: |
+            LLVM_VERSION=${{ env.LLVM_VERSION }}
+            GCC_VERSION=${{ env.GCC_VERSION }}
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.UBUNTU_VERSION }}-${{ env.LLVM_VERSION }}
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_BASE_NAME }}-${{ matrix.target }}:${{ env.UBUNTU_VERSION }}-${{ env.LLVM_VERSION }}-${{ env.GCC_VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_BASE_NAME }}-${{ matrix.target }}:latest
           labels: |
-            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
-            org.opencontainers.image.version=${{ env.UBUNTU_VERSION }}-${{ env.LLVM_VERSION }}
+            org.opencontainers.image.title=${{ env.IMAGE_BASE_NAME }}-${{ matrix.target }}
+            org.opencontainers.image.version=${{ env.UBUNTU_VERSION }}-${{ env.LLVM_VERSION }}-${{ env.GCC_VERSION }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.created=${{ env.CREATED }}
@@ -64,5 +72,3 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           no-cache: ${{ github.event_name == 'schedule' }}
-          build-args: |
-            LLVM_VERSION=${{ env.LLVM_VERSION }}
