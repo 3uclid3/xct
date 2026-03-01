@@ -1,6 +1,6 @@
 name: CodeQL
 
-on: {} # remove {} and uncomment the following lines to enable the workflow
+on: workflow_dispatch # remove `workflow_dispatch` and uncomment the following lines to enable the workflow
 #  push:
 #    branches: ["main"]
 #  pull_request:
