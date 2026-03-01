@@ -3,6 +3,9 @@
 .vs/*
 .vscode/*
 
+# AI
+.claude/*
+
 # clandg
 .cache/*
 

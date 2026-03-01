@@ -1,7 +1,8 @@
-includes(
-    ".utility", 
+add_requires("doctest")
 
+includes(
     "benchmark",
-    "fuzz",
+    "compile",
+    "shared", 
     "unit"
 )
