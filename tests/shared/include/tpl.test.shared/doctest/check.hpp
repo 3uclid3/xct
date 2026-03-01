@@ -4,6 +4,10 @@
 
 #include <tpl.test.shared/doctest/assert_error.hpp>
 
+#ifndef TPL_ASSERT_ENABLED
+#define TPL_ASSERT_ENABLED 1
+#endif
+
 #if TPL_ASSERT_ENABLED
 
 #define WARN_ASSERTS(expr) WARN_THROWS_AS(expr, tpl::test::assert_error)
