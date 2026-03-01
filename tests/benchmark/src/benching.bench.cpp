@@ -4,7 +4,7 @@
 
 namespace tpl { namespace {
 
-static void bm_string_creation(benchmark::State& state)
+static auto bm_string_creation(benchmark::State& state) -> void
 {
     for (auto _ : state)
     {
