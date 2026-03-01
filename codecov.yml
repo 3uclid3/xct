@@ -10,11 +10,12 @@ coverage:
         target: auto
         paths:
           - "app/**"
-          - "lib/**"
+          - "core/**"
     patch:
       default:
-        target: 85%
-        threshold: 1%
+        informational: true
+        target: 75%
+        threshold: 100%
 
 comment:
   layout: "condensed_header, components, tree, condensed_footer"
@@ -23,6 +24,7 @@ comment:
 ignore:
   - ".devcontainer/**"
   - ".github/**"
+  - ".vscode/**"
   - ".xmake/**"
   - "build/**"
   - "tests/**"

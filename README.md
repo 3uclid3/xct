@@ -1,11 +1,11 @@
-# tpl-cpp
+# tpl
 
 A modern C++ template scaffolded around the [xmake](https://xmake.io) build system. It provides a minimal application entry point, a modular library layout, and pre-wired unit, fuzz, and benchmark harnesses so new projects can focus on domain logic immediately.
 
 ## Features
 
 - C++23 toolchain with LLVM, extra warnings, and warnings-as-errors enabled by default.
-- Separated `app/` and `lib/` targets to encourage layered architecture.
+- Separated `app/` and `core/` targets to encourage layered architecture.
 - Testing skeletons for doctest-based unit tests, fuzz targets, and benchmarks.
 - Continuous integration friendly layout with generated `compile_commands.json`.
 
@@ -27,22 +27,22 @@ xmake              # build all default targets
 ### Run the Sample Application
 
 ```bash
-xmake run tpl-cpp
+xmake run tpl
 ```
 
-The default `main.cpp` simply returns success. Replace it with your application logic under `app/tpl-cpp/`.
+The default `main.cpp` simply returns success. Replace it with your application logic under `app/`.
 
 ### Execute Tests
 
-- Run unit tests: `xmake run tpl-cpp.core.tests.unit`
-- Enable JUnit output: `xmake run tpl-cpp.core.tests.unit --reporters=junit --out=report.xml`
+- Run unit tests: `xmake test -g tests/unit`
+- Enable JUnit output: `xmake f --junit_report=y && xmake test -g tests/unit`
 - Add fuzz or benchmark targets under `tests/fuzz/` and `tests/benchmark/`, then invoke with `xmake run <target-name>`.
 
 ## Project Layout
 
-- `app/` – application entry points grouped by executable.
-- `lib/` – reusable libraries (`tpl-cpp.core` is the default static library target).
-- `tests/` – doctest-based unit tests plus optional fuzz and benchmark targets.
+- `app/` – application entry point.
+- `core/` – reusable library (`tpl.core` static target; headers under `core/include/tpl/`, sources under `core/src/`).
+- `tests/` – doctest-based unit tests, compile tests, and optional benchmark targets.
 - `build/` – generated artifacts (ignored from version control).
 - `AGENTS.md` – contribution expectations for humans and AI collaborators.
 
@@ -57,7 +57,7 @@ The default `main.cpp` simply returns success. Replace it with your application 
 
 - Use `xmake f --menu` for an interactive configuration UI.
 - Generate compilation database (auto-enabled) under `build/compile_commands.json` for editor tooling.
-- Extend `lib/core` with headers and source files; they are exported to dependents automatically.
+- Extend `core/` with headers and source files; they are exported to dependents automatically.
 - Keep tests close to the code they exercise for discoverability.
 
 ## Contributing

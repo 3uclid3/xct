@@ -1,7 +1,7 @@
 #pragma once
 
-namespace tpl_cpp {
+namespace tpl {
 
 auto return_true() noexcept -> bool;
 
-} // namespace tpl_cpp
+} // namespace tpl
