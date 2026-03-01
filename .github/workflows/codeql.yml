@@ -1,12 +1,12 @@
 name: CodeQL
 
-on:
-  push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
-  schedule:
-    - cron: "28 0 * * 5"
+on: {} # remove {} and uncomment the following lines to enable the workflow
+#  push:
+#    branches: ["main"]
+#  pull_request:
+#    branches: ["main"]
+#  schedule:
+#    - cron: "28 0 * * 5"
 
 jobs:
   linux-codeql:
