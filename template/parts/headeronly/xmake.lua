@@ -13,6 +13,7 @@ option("junit_reports")
     set_default(false)
     set_showmenu(true)
     set_description("Enable JUnit XML report generation for tests")
+option_end()
 
 add_requires("benchmark", "doctest")
    
