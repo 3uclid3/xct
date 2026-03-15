@@ -6,8 +6,8 @@ on:
     branches: [main]
 
 permissions:
-  actions: write
   contents: write
+  workflows: write
 
 jobs:
   compose:
